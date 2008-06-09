@@ -1,0 +1,9 @@
+History.txt
+Manifest.txt
+README
+Rakefile
+lib/merb_recaptcha.rb
+lib/merb_recaptcha/version.rb
+setup.rb
+test/test_helper.rb
+test/test_merb_recaptcha.rb

@@ -1,0 +1,70 @@
+MerbRecaptcha
+
+This is a Merb 'take' on the original code by McClain Looney http://www.loonsoft.com/recaptcha/.
+
+First, create an account at ReCaptcha.net at http://www.recaptcha.net/
+
+Get your keys, and make them available as constants in your application. You can do this however you want, but RCC_PUB, RCC_PRIV (for regular reCaptcha) and MH_PUB MH_PRIV (for MailHide) must be set to their respective values (the keys you receive from reCaptcha).
+
+The common methods of doing this are to set these variables in your environment/production.rb file, or via an environment variable.
+
+The ReCaptchaClient initializer can also take an options hash containing keys thusly:
+
+  RecaptchaClient.new(:rcc_pub=>'some key', :rcc_priv=>'some other key')
+
+After your keys are configured, require and include the gem into your init.rb:
+
+dependency "merb_recaptcha"
+
+then include the helper into your controller:
+
+class User < Application
+  include MerbRecaptcha::AppHelper
+
+This will mix in validate_recap to your application controller. Then, in your concrete controller, chain validate_recap into your validation:
+
+def create
+  @user = User.new(params[:user])
+    if validate_recap(params, @user.errors) && @user.save
+      ...do stuff...
+
+Require and include the view helper in the appropriate helper:
+
+module Merb
+  module UserHelper
+    include MerbRecaptcha::ViewHelper
+  end
+end
+
+
+This will mix in get_captcha().
+
+Now you can just call
+
+get_captcha()
+
+in your view to insert the requisite widget from ReCaptcha.
+
+To customize theme and tabindex of the widget, you can include an options hash:
+
+get_captcha(:options => {:theme => 'white', :tabindex => 10})
+
+See the reCAPTCHA API Documentation under “Look and Feel Customization” for more information.
+Proxy support
+If your rails application requires the use of a proxy, set proxy_host into your environment:
+
+  ENV['proxy_host']='foo.example.com:8080'
+
+Mail Hide
+
+When you mix in ViewHelper as above, you also get
+
+ mail_hide(address, contents)
+
+, which you can call in your view thusly:
+
+  ...
+  <%= mail_hide(user.email) %>
+
+Contents defaults to the first few characters of the email address.
+
